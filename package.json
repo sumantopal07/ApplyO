@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "ApplyO - One profile. Infinite applications.",
   "private": true,
+  "packageManager": "npm@10.8.2",
   "workspaces": [
     "apps/*",
     "services/*",
