@@ -1,0 +1,17 @@
+com/applyo/document/repository/DocumentMetadataRepository.class
+com/applyo/document/exception/DocumentStorageException.class
+com/applyo/document/dto/ApiResponse.class
+com/applyo/document/exception/DocumentNotFoundException.class
+com/applyo/document/model/DocumentMetadata$DocumentMetadataBuilder.class
+com/applyo/document/dto/ApiResponse$ErrorDetails.class
+com/applyo/document/model/DocumentMetadata.class
+com/applyo/document/service/DocumentService.class
+com/applyo/document/DocumentServiceApplication.class
+com/applyo/document/dto/ApiResponse$ErrorDetails$ErrorDetailsBuilder.class
+com/applyo/document/model/DocumentType.class
+com/applyo/document/exception/GlobalExceptionHandler.class
+com/applyo/document/dto/DocumentResponse$DocumentResponseBuilder.class
+com/applyo/document/dto/DocumentResponse.class
+com/applyo/document/dto/ApiResponse$ApiResponseBuilder.class
+com/applyo/document/controller/DocumentController.class
+com/applyo/document/exception/InvalidDocumentException.class

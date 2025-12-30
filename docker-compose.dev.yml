@@ -1,0 +1,71 @@
+version: '3.8'
+
+# Development-specific Docker Compose configuration
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  # In development, we run the API gateway with hot-reload
+  api-gateway:
+    build:
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
+      target: deps
+    volumes:
+      - ./packages/shared/src:/app/packages/shared/src
+      - ./packages/database/src:/app/packages/database/src
+      - ./services/api-gateway/src:/app/services/api-gateway/src
+    command: npm run dev --workspace=api-gateway
+    environment:
+      NODE_ENV: development
+      DEBUG: "applyo:*"
+
+  # In development, run web with hot-reload
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: deps
+    volumes:
+      - ./packages/shared/src:/app/packages/shared/src
+      - ./apps/web/src:/app/apps/web/src
+      - ./apps/web/public:/app/apps/web/public
+    command: npm run dev --workspace=web
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3001/api
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: applyo-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@applyo.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - applyo-network
+
+  # Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: applyo-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - applyo-network

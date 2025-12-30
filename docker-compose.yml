@@ -1,0 +1,180 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: applyo-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: applyo
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - applyo-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: applyo-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - applyo-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Gateway (Spring Cloud Gateway)
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: applyo-api-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JWT_SECRET=${JWT_SECRET:-Y29tcGxleFNlY3JldEtleUZvckFwcGx5T0F1dGhlbnRpY2F0aW9uU2VydmljZTEyMzQ1Njc4OTA=}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - applyo-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: applyo-auth-service
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - MONGODB_URI=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-admin123}@mongodb:27017/applyo?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-Y29tcGxleFNlY3JldEtleUZvckFwcGx5T0F1dGhlbnRpY2F0aW9uU2VydmljZTEyMzQ1Njc4OTA=}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - applyo-network
+
+  # Candidate Service
+  candidate-service:
+    build:
+      context: ./services/candidate-service
+      dockerfile: Dockerfile
+    container_name: applyo-candidate-service
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - MONGODB_URI=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-admin123}@mongodb:27017/applyo?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - applyo-network
+
+  # Company Service
+  company-service:
+    build:
+      context: ./services/company-service
+      dockerfile: Dockerfile
+    container_name: applyo-company-service
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - MONGODB_URI=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-admin123}@mongodb:27017/applyo?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - applyo-network
+
+  # Application Service
+  application-service:
+    build:
+      context: ./services/application-service
+      dockerfile: Dockerfile
+    container_name: applyo-application-service
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - MONGODB_URI=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-admin123}@mongodb:27017/applyo?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - applyo-network
+
+  # Document Service
+  document-service:
+    build:
+      context: ./services/document-service
+      dockerfile: Dockerfile
+    container_name: applyo-document-service
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - MONGODB_URI=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-admin123}@mongodb:27017/applyo?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - applyo-network
+
+  # Next.js Frontend
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: applyo-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api-gateway:8080
+      - NODE_ENV=production
+    depends_on:
+      - api-gateway
+    networks:
+      - applyo-network
+
+networks:
+  applyo-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  redis_data:

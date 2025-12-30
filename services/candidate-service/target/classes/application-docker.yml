@@ -1,0 +1,24 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: candidate-service
+  
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://admin:admin123@mongodb:27017/applyo?authSource=admin}
+      database: applyo
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.applyo: DEBUG

@@ -1,0 +1,42 @@
+{
+  "name": "@applyo/api-gateway",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@applyo/shared": "*",
+    "@applyo/database": "*",
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0",
+    "express-rate-limit": "^7.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^9.0.0",
+    "axios": "^1.6.0",
+    "pino": "^8.17.0",
+    "pino-pretty": "^10.3.0",
+    "http-proxy-middleware": "^2.0.6",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.0.0",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/morgan": "^1.9.9",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/uuid": "^9.0.7",
+    "@types/multer": "^1.4.11",
+    "tsx": "^4.7.0"
+  }
+}

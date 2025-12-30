@@ -1,0 +1,29 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: auth-service
+  
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://admin:admin123@mongodb:27017/applyo?authSource=admin}
+      database: applyo
+
+jwt:
+  secret: ${JWT_SECRET:Y29tcGxleFNlY3JldEtleUZvckFwcGx5T0F1dGhlbnRpY2F0aW9uU2VydmljZTEyMzQ1Njc4OTA=}
+  access-token-expiration-ms: 900000
+  refresh-token-expiration-ms: 604800000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.applyo: DEBUG

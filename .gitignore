@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.pem
+.turbo/
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Uploads
+uploads/
+temp/
+
+# Docker volumes (local dev)
+postgres_data/
+redis_data/
+
+# Certificates
+nginx/ssl/
+
+# Sentry Config File
+.sentryclirc

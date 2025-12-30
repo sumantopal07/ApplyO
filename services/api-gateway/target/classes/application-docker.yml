@@ -1,0 +1,86 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8083
+          predicates:
+            - Path=/api/v1/auth/**
+        
+        - id: candidate-service
+          uri: http://candidate-service:8081
+          predicates:
+            - Path=/api/v1/candidate/**
+        
+        - id: company-service
+          uri: http://company-service:8082
+          predicates:
+            - Path=/api/v1/company/**
+        
+        - id: job-service
+          uri: http://company-service:8082
+          predicates:
+            - Path=/api/v1/jobs/**
+        
+        - id: application-service
+          uri: http://application-service:8084
+          predicates:
+            - Path=/api/v1/applications/**
+        
+        - id: consent-service
+          uri: http://application-service:8084
+          predicates:
+            - Path=/api/v1/consent/**
+        
+        - id: document-service
+          uri: http://document-service:8085
+          predicates:
+            - Path=/api/v1/documents/**
+      
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://web:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - Authorization
+            allowCredentials: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+
+jwt:
+  secret: ${JWT_SECRET:Y29tcGxleFNlY3JldEtleUZvckFwcGx5T0F1dGhlbnRpY2F0aW9uU2VydmljZTEyMzQ1Njc4OTA=}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+
+logging:
+  level:
+    com.applyo: DEBUG
+    org.springframework.cloud.gateway: DEBUG

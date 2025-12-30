@@ -1,0 +1,5 @@
+com/applyo/gateway/config/GatewayConfig.class
+com/applyo/gateway/util/JwtUtil.class
+com/applyo/gateway/filter/JwtAuthenticationFilter.class
+com/applyo/gateway/ApiGatewayApplication.class
+com/applyo/gateway/filter/RequestLoggingFilter.class
