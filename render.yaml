@@ -1,0 +1,144 @@
+# Render Blueprint - ApplyO Microservices
+# Deploy with: https://render.com/docs/infrastructure-as-code
+
+services:
+  # API Gateway - Main entry point
+  - type: web
+    name: applyo-gateway
+    runtime: docker
+    dockerfilePath: ./services/api-gateway/Dockerfile
+    dockerContext: ./services/api-gateway
+    region: oregon
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: 8080
+      - key: AUTH_SERVICE_URL
+        fromService:
+          type: web
+          name: applyo-auth
+          property: hostport
+      - key: CANDIDATE_SERVICE_URL
+        fromService:
+          type: web
+          name: applyo-candidate
+          property: hostport
+      - key: COMPANY_SERVICE_URL
+        fromService:
+          type: web
+          name: applyo-company
+          property: hostport
+      - key: APPLICATION_SERVICE_URL
+        fromService:
+          type: web
+          name: applyo-application
+          property: hostport
+      - key: DOCUMENT_SERVICE_URL
+        fromService:
+          type: web
+          name: applyo-document
+          property: hostport
+      - key: JWT_SECRET
+        generateValue: true
+
+  # Auth Service
+  - type: web
+    name: applyo-auth
+    runtime: docker
+    dockerfilePath: ./services/auth-service/Dockerfile
+    dockerContext: ./services/auth-service
+    region: oregon
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: 8083
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: "86400000"
+
+  # Candidate Service
+  - type: web
+    name: applyo-candidate
+    runtime: docker
+    dockerfilePath: ./services/candidate-service/Dockerfile
+    dockerContext: ./services/candidate-service
+    region: oregon
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: 8081
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # Company Service
+  - type: web
+    name: applyo-company
+    runtime: docker
+    dockerfilePath: ./services/company-service/Dockerfile
+    dockerContext: ./services/company-service
+    region: oregon
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: 8082
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # Application Service
+  - type: web
+    name: applyo-application
+    runtime: docker
+    dockerfilePath: ./services/application-service/Dockerfile
+    dockerContext: ./services/application-service
+    region: oregon
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: 8084
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # Document Service
+  - type: web
+    name: applyo-document
+    runtime: docker
+    dockerfilePath: ./services/document-service/Dockerfile
+    dockerContext: ./services/document-service
+    region: oregon
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: 8085
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false

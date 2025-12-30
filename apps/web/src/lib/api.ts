@@ -79,12 +79,27 @@ export const authApi = {
     
   login: (data: { email: string; password: string }) =>
     api.post<ApiResponse>('/auth/login', data),
+  
+  companyLogin: (data: { email: string; password: string }) =>
+    api.post<ApiResponse>('/auth/company/login', data),
+  
+  companySignup: (data: { email: string; password: string; companyName: string }) =>
+    api.post<ApiResponse>('/auth/company/signup', data),
     
   refresh: (refreshToken: string) =>
     api.post<ApiResponse>('/auth/refresh', { refreshToken }),
     
   logout: (refreshToken: string) =>
     api.post<ApiResponse>('/auth/logout', { refreshToken }),
+  
+  updateProfile: (data: any) =>
+    api.put<ApiResponse>('/auth/profile', data),
+  
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    api.put<ApiResponse>('/auth/password', data),
+  
+  deleteAccount: () =>
+    api.delete<ApiResponse>('/auth/account'),
 };
 
 // Candidate API
