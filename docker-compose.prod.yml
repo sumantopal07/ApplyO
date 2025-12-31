@@ -1,13 +1,26 @@
 version: '3.8'
 
 services:
+  # Nginx - Reverse Proxy (port 80)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+    networks:
+      - applyo-network
+
   # API Gateway - Entry point
   api-gateway:
     build:
       context: ./services/api-gateway
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - AUTH_SERVICE_URL=http://auth-service:8083
