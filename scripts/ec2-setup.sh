@@ -13,6 +13,19 @@ echo "=========================================="
 echo "Updating system..."
 sudo apt update && sudo apt upgrade -y
 
+# Add swap space (2GB) for t2.micro instances
+echo "Setting up swap space..."
+if [ ! -f /swapfile ]; then
+    sudo fallocate -l 2G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+    echo "Swap space created!"
+else
+    echo "Swap already exists, skipping..."
+fi
+
 # Install Docker
 echo "Installing Docker..."
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
