@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # API Gateway - Entry point
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - AUTH_SERVICE_URL=http://auth-service:8083
+      - CANDIDATE_SERVICE_URL=http://candidate-service:8081
+      - COMPANY_SERVICE_URL=http://company-service:8082
+      - APPLICATION_SERVICE_URL=http://application-service:8084
+      - DOCUMENT_SERVICE_URL=http://document-service:8085
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://web-beige-nine-57.vercel.app}
+    depends_on:
+      - auth-service
+      - candidate-service
+      - company-service
+      - application-service
+      - document-service
+    restart: unless-stopped
+    networks:
+      - applyo-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+    restart: unless-stopped
+    networks:
+      - applyo-network
+
+  # Candidate Service
+  candidate-service:
+    build:
+      context: ./services/candidate-service
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MONGODB_URI=${MONGODB_URI}
+    restart: unless-stopped
+    networks:
+      - applyo-network
+
+  # Company Service
+  company-service:
+    build:
+      context: ./services/company-service
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MONGODB_URI=${MONGODB_URI}
+    restart: unless-stopped
+    networks:
+      - applyo-network
+
+  # Application Service
+  application-service:
+    build:
+      context: ./services/application-service
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MONGODB_URI=${MONGODB_URI}
+    restart: unless-stopped
+    networks:
+      - applyo-network
+
+  # Document Service
+  document-service:
+    build:
+      context: ./services/document-service
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MONGODB_URI=${MONGODB_URI}
+    restart: unless-stopped
+    networks:
+      - applyo-network
+
+networks:
+  applyo-network:
+    driver: bridge
