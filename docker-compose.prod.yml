@@ -31,12 +31,15 @@ services:
       - MONGODB_URI=${MONGODB_URI}
       - JWT_SECRET=${JWT_SECRET}
       - CORS_ORIGIN=${CORS_ORIGIN:-https://web-beige-nine-57.vercel.app}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - auth-service
       - candidate-service
       - company-service
       - application-service
       - document-service
+      - redis
     restart: unless-stopped
     networks:
       - applyo-network
