@@ -1,0 +1,7 @@
+services/
+docker/
+nginx/
+scripts/
+*.md
+docker-compose*.yml
+render.yaml

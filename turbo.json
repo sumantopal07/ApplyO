@@ -6,6 +6,24 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    "@applyo/api-gateway#build": {
+      "cache": false
+    },
+    "@applyo/auth-service#build": {
+      "cache": false
+    },
+    "@applyo/candidate-service#build": {
+      "cache": false
+    },
+    "@applyo/company-service#build": {
+      "cache": false
+    },
+    "@applyo/application-service#build": {
+      "cache": false
+    },
+    "@applyo/document-service#build": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true
