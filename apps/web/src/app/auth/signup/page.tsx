@@ -56,6 +56,7 @@ export default function SignupPage() {
         email: data.email,
         password: data.password,
         fullName: data.fullName,
+        userType: 'CANDIDATE', // Default to CANDIDATE
       });
       const { accessToken, refreshToken, user } = response.data.data;
       

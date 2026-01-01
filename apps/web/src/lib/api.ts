@@ -74,7 +74,7 @@ export interface ApiResponse<T = any> {
 
 // Auth API
 export const authApi = {
-  signup: (data: { email: string; password: string; fullName: string }) =>
+  signup: (data: { email: string; password: string; fullName: string; userType: 'CANDIDATE' | 'COMPANY' }) =>
     api.post<ApiResponse>('/auth/signup', data),
     
   login: (data: { email: string; password: string }) =>
