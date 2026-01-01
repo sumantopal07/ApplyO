@@ -23,14 +23,10 @@ import {
 
 interface ApplicationStats {
   total: number;
-  byStatus: {
-    submitted: number;
-    viewed: number;
-    shortlisted: number;
-    interview: number;
-    rejected: number;
-    hired: number;
-  };
+  shortlisted: number;
+  interviews: number;
+  rejected: number;
+  pending: number;
 }
 
 interface Application {
