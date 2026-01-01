@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/auth';
 import { useProfileStore } from '@/store/profile';
 import { candidateApi } from '@/lib/api';
@@ -44,21 +45,35 @@ export default function DashboardLayout({
       return;
     }
 
-    // Fetch profile
-    const fetchProfile = async () => {
+    // Fetch profile or create if it doesn't exist
+    const fetchOrCreateProfile = async () => {
       setLoading(true);
       try {
         const response = await candidateApi.getProfile();
         setProfile(response.data.data);
-      } catch (error) {
-        console.error('Failed to fetch profile:', error);
+      } catch (error: any) {
+        // If profile doesn't exist (404), create it
+        if (error.response?.status === 404 && user) {
+          try {
+            const createResponse = await candidateApi.createProfile({
+              userId: user.id,
+              email: user.email,
+              fullName: user.fullName || user.email.split('@')[0],
+            });
+            setProfile(createResponse.data.data);
+          } catch (createError) {
+            console.error('Failed to create profile:', createError);
+          }
+        } else {
+          console.error('Failed to fetch profile:', error);
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProfile();
-  }, [isAuthenticated, router, setProfile, setLoading]);
+    fetchOrCreateProfile();
+  }, [isAuthenticated, router, user, setProfile, setLoading]);
 
   const handleLogout = () => {
     logout();
@@ -171,7 +186,10 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-lg">
+            <button 
+              onClick={() => toast('No new notifications', { icon: '🔔' })}
+              className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+            >
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </button>
@@ -189,7 +207,7 @@ export default function DashboardLayout({
         </div>
 
         {/* Page content */}
-        <main className="p-4 lg:p-8">{children}</main>
+        <main className="p-4 lg:p-8 fade-in-up">{children}</main>
       </div>
     </div>
   );

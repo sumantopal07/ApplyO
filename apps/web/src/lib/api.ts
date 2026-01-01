@@ -104,6 +104,9 @@ export const authApi = {
 
 // Candidate API
 export const candidateApi = {
+  createProfile: (data: { userId: string; email: string; fullName: string }) =>
+    api.post<ApiResponse>('/candidate', data),
+  
   getProfile: () =>
     api.get<ApiResponse>('/candidate/profile'),
     
@@ -237,6 +240,13 @@ export const documentApi = {
     
   delete: (id: string) =>
     api.delete<ApiResponse>(`/documents/${id}`),
+    
+  download: async (id: string): Promise<string> => {
+    const response = await api.get(`/documents/${id}/download`, {
+      responseType: 'blob',
+    });
+    return URL.createObjectURL(response.data);
+  },
 };
 
 // Company API

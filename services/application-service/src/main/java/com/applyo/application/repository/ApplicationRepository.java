@@ -30,4 +30,6 @@ public interface ApplicationRepository extends MongoRepository<Application, Stri
     long countByCompanyId(String companyId);
 
     long countByCandidateId(String candidateId);
+
+    long countByCandidateIdAndStatus(String candidateId, ApplicationStatus status);
 }

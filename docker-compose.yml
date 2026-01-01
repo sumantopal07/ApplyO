@@ -55,6 +55,11 @@ services:
       - JWT_SECRET=${JWT_SECRET:-Y29tcGxleFNlY3JldEtleUZvckFwcGx5T0F1dGhlbnRpY2F0aW9uU2VydmljZTEyMzQ1Njc4OTA=}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - AUTH_SERVICE_URL=http://auth-service:8083
+      - CANDIDATE_SERVICE_URL=http://candidate-service:8081
+      - COMPANY_SERVICE_URL=http://company-service:8082
+      - APPLICATION_SERVICE_URL=http://application-service:8084
+      - DOCUMENT_SERVICE_URL=http://document-service:8085
     depends_on:
       redis:
         condition: service_healthy

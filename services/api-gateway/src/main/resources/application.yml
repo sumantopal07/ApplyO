@@ -9,12 +9,50 @@ spring:
     gateway:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      
+      routes:
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/v1/auth/**
+        
+        - id: candidate-service
+          uri: ${CANDIDATE_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/candidate/**
+        
+        - id: company-service
+          uri: ${COMPANY_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/company/**
+        
+        - id: job-service
+          uri: ${COMPANY_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/jobs/**
+        
+        - id: application-service
+          uri: ${APPLICATION_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/applications/**
+        
+        - id: consent-service
+          uri: ${APPLICATION_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/consent/**
+        
+        - id: document-service
+          uri: ${DOCUMENT_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/v1/documents/**
+      
       globalcors:
         cors-configurations:
           '[/**]':
             allowedOrigins:
               - "http://localhost:3000"
               - "${CORS_ORIGIN:https://web-beige-nine-57.vercel.app}"
+              - "https://d2z6dl8z16a4dw.cloudfront.net"
             allowedMethods:
               - GET
               - POST
@@ -34,18 +72,6 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
-
-services:
-  auth-service:
-    url: ${AUTH_SERVICE_URL:http://localhost:8083}
-  candidate-service:
-    url: ${CANDIDATE_SERVICE_URL:http://localhost:8081}
-  company-service:
-    url: ${COMPANY_SERVICE_URL:http://localhost:8082}
-  application-service:
-    url: ${APPLICATION_SERVICE_URL:http://localhost:8084}
-  document-service:
-    url: ${DOCUMENT_SERVICE_URL:http://localhost:8085}
 
 jwt:
   secret: ${JWT_SECRET:your-super-secret-jwt-key-that-is-at-least-256-bits-long}

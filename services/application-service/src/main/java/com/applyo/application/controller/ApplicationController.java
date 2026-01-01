@@ -9,12 +9,30 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/applications")
 @RequiredArgsConstructor
 public class ApplicationController {
 
     private final ApplicationService applicationService;
+
+    @GetMapping("/stats/summary")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getApplicationStats(
+            @RequestHeader("X-User-Id") String userId) {
+        Map<String, Object> stats = applicationService.getApplicationStats(userId);
+        return ResponseEntity.ok(ApiResponse.success(stats));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ApplicationResponse>>> getApplications(
+            @RequestHeader("X-User-Id") String userId,
+            @RequestParam(required = false) Integer limit) {
+        List<ApplicationResponse> applications = applicationService.getRecentApplications(userId, limit != null ? limit : 10);
+        return ResponseEntity.ok(ApiResponse.success(applications));
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<ApplicationResponse>> createApplication(

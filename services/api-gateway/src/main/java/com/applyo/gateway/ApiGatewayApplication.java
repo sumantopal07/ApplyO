@@ -10,19 +10,19 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class ApiGatewayApplication {
 
-    @Value("${services.auth-service.url:http://localhost:8083}")
+    @Value("${AUTH_SERVICE_URL:http://localhost:8083}")
     private String authServiceUrl;
     
-    @Value("${services.candidate-service.url:http://localhost:8081}")
+    @Value("${CANDIDATE_SERVICE_URL:http://localhost:8081}")
     private String candidateServiceUrl;
     
-    @Value("${services.company-service.url:http://localhost:8082}")
+    @Value("${COMPANY_SERVICE_URL:http://localhost:8082}")
     private String companyServiceUrl;
     
-    @Value("${services.application-service.url:http://localhost:8084}")
+    @Value("${APPLICATION_SERVICE_URL:http://localhost:8084}")
     private String applicationServiceUrl;
     
-    @Value("${services.document-service.url:http://localhost:8085}")
+    @Value("${DOCUMENT_SERVICE_URL:http://localhost:8085}")
     private String documentServiceUrl;
 
     public static void main(String[] args) {

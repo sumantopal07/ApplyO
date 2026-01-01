@@ -15,6 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -109,6 +111,32 @@ public class ApplicationService {
         application.setStatus(ApplicationStatus.WITHDRAWN);
         application = applicationRepository.save(application);
         return mapToResponse(application);
+    }
+
+    public Map<String, Object> getApplicationStats(String userId) {
+        long total = applicationRepository.countByCandidateId(userId);
+        long shortlisted = applicationRepository.countByCandidateIdAndStatus(userId, ApplicationStatus.SHORTLISTED);
+        long interviews = applicationRepository.countByCandidateIdAndStatus(userId, ApplicationStatus.INTERVIEW_SCHEDULED)
+                + applicationRepository.countByCandidateIdAndStatus(userId, ApplicationStatus.INTERVIEWED);
+        long rejected = applicationRepository.countByCandidateIdAndStatus(userId, ApplicationStatus.REJECTED);
+        long pending = applicationRepository.countByCandidateIdAndStatus(userId, ApplicationStatus.PENDING);
+        
+        Map<String, Object> stats = new java.util.HashMap<>();
+        stats.put("total", total);
+        stats.put("shortlisted", shortlisted);
+        stats.put("interviews", interviews);
+        stats.put("rejected", rejected);
+        stats.put("pending", pending);
+        return stats;
+    }
+
+    public List<ApplicationResponse> getRecentApplications(String userId, int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "appliedAt"));
+        return applicationRepository.findByCandidateId(userId, pageable)
+                .getContent()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     private ApplicationResponse mapToResponse(Application application) {

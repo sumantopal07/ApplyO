@@ -20,12 +20,13 @@ import { formatDate, formatFileSize } from '@/lib/utils';
 
 interface Document {
   id: string;
-  name: string;
-  type: string;
+  filename: string;
+  originalFilename: string;
+  contentType: string;
   size: number;
-  url: string;
-  category: string;
-  uploadedAt: string;
+  downloadUrl: string;
+  documentType: string;
+  uploadedAt: string | null;
 }
 
 export default function DocumentsPage() {
@@ -101,7 +102,8 @@ export default function DocumentsPage() {
     }
   };
 
-  const getFileIcon = (type: string) => {
+  const getFileIcon = (type?: string) => {
+    if (!type) return <File className="w-8 h-8 text-gray-500" />;
     if (type.includes('pdf')) return <FileText className="w-8 h-8 text-red-500" />;
     if (type.includes('image')) return <FileImage className="w-8 h-8 text-blue-500" />;
     if (type.includes('spreadsheet') || type.includes('excel'))
@@ -118,11 +120,11 @@ export default function DocumentsPage() {
   ];
 
   const filteredDocuments = documents.filter(
-    (doc) => selectedCategory === 'all' || doc.category === selectedCategory
+    (doc) => selectedCategory === 'all' || doc.documentType?.toLowerCase() === selectedCategory
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-in-up">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
         <select
@@ -214,44 +216,80 @@ function DocumentCard({
 }: {
   document: Document;
   onDelete: (id: string) => void;
-  getFileIcon: (type: string) => React.ReactNode;
+  getFileIcon: (type?: string) => React.ReactNode;
 }) {
   const [showPreview, setShowPreview] = useState(false);
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+
+  const handlePreview = async () => {
+    setLoadingPreview(true);
+    try {
+      const url = await documentApi.download(document.id);
+      setBlobUrl(url);
+      setShowPreview(true);
+    } catch (error) {
+      toast.error('Failed to load preview');
+    } finally {
+      setLoadingPreview(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const url = await documentApi.download(document.id);
+      const a = window.document.createElement('a');
+      a.href = url;
+      a.download = document.originalFilename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error('Failed to download file');
+    }
+  };
+
+  const closePreview = () => {
+    setShowPreview(false);
+    if (blobUrl) {
+      URL.revokeObjectURL(blobUrl);
+      setBlobUrl(null);
+    }
+  };
 
   return (
     <>
       <div className="card p-4 hover:shadow-md transition-shadow">
         <div className="flex items-start space-x-4">
-          <div className="flex-shrink-0">{getFileIcon(document.type)}</div>
+          <div className="flex-shrink-0">{getFileIcon(document.contentType)}</div>
           <div className="flex-1 min-w-0">
-            <h4 className="font-medium text-gray-900 truncate" title={document.name}>
-              {document.name}
+            <h4 className="font-medium text-gray-900 truncate" title={document.originalFilename}>
+              {document.originalFilename}
             </h4>
             <p className="text-sm text-gray-500">
-              {formatFileSize(document.size)} • {formatDate(document.uploadedAt)}
+              {formatFileSize(document.size)} • {document.uploadedAt ? formatDate(document.uploadedAt) : 'Recently'}
             </p>
             <span className="inline-block mt-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
-              {document.category}
+              {document.documentType}
             </span>
           </div>
         </div>
 
         <div className="flex items-center justify-end space-x-2 mt-4 pt-4 border-t">
           <button
-            onClick={() => setShowPreview(true)}
-            className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded"
+            onClick={handlePreview}
+            disabled={loadingPreview}
+            className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded disabled:opacity-50"
             title="Preview"
           >
-            <Eye className="w-4 h-4" />
+            {loadingPreview ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
           </button>
-          <a
-            href={document.url}
-            download
+          <button
+            onClick={handleDownload}
             className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded"
             title="Download"
           >
             <Download className="w-4 h-4" />
-          </a>
+          </button>
           <button
             onClick={() => onDelete(document.id)}
             className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
@@ -263,22 +301,22 @@ function DocumentCard({
       </div>
 
       {/* Preview Modal */}
-      {showPreview && (
+      {showPreview && blobUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
           <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] flex flex-col">
             <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="font-medium text-gray-900 truncate">{document.name}</h3>
-              <button onClick={() => setShowPreview(false)}>
+              <h3 className="font-medium text-gray-900 truncate">{document.originalFilename}</h3>
+              <button onClick={closePreview}>
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
             <div className="flex-1 p-4">
-              {document.type.includes('pdf') ? (
-                <iframe src={document.url} className="w-full h-full" title={document.name} />
-              ) : document.type.includes('image') ? (
+              {document.contentType?.includes('pdf') ? (
+                <iframe src={blobUrl} className="w-full h-full" title={document.originalFilename} />
+              ) : document.contentType?.includes('image') ? (
                 <img
-                  src={document.url}
-                  alt={document.name}
+                  src={blobUrl}
+                  alt={document.originalFilename}
                   className="max-w-full max-h-full mx-auto object-contain"
                 />
               ) : (
@@ -286,14 +324,13 @@ function DocumentCard({
                   <div className="text-center">
                     <File className="w-16 h-16 mx-auto text-gray-400" />
                     <p className="mt-4">Preview not available for this file type</p>
-                    <a
-                      href={document.url}
-                      download
+                    <button
+                      onClick={handleDownload}
                       className="btn-primary mt-4 inline-flex items-center"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Download to view
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}

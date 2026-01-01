@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: ${PORT:8081}
 
 spring:
   application:
@@ -9,6 +9,10 @@ spring:
     mongodb:
       uri: ${MONGODB_URI:mongodb://localhost:27017/applyo}
       database: applyo
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
 
 management:
   endpoints:

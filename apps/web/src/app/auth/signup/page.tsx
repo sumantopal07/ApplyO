@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Loader2, CheckCircle, PartyPopper } from 'lucide-react';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
 
@@ -31,6 +31,8 @@ export default function SignupPage() {
   const setAuth = useAuthStore((state) => state.setAuth);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [userName, setUserName] = useState('');
 
   const {
     register,
@@ -61,18 +63,47 @@ export default function SignupPage() {
       const { accessToken, refreshToken, user } = response.data.data;
       
       setAuth(user, accessToken, refreshToken);
-      toast.success('Account created successfully!');
-      router.push('/dashboard');
+      setUserName(data.fullName.split(' ')[0]);
+      setSignupSuccess(true);
+      
+      // Show success state for 2 seconds before redirecting
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 2000);
     } catch (error: any) {
       const message = error.response?.data?.error?.message || 'Signup failed';
       toast.error(message);
-    } finally {
       setIsLoading(false);
     }
   };
 
+  // Success screen
+  if (signupSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full text-center fade-in-up">
+          <div className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto scale-in">
+              <PartyPopper className="w-10 h-10 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Welcome, {userName}! 🎉
+            </h2>
+            <p className="text-gray-600">
+              Your account has been created successfully. Redirecting you to your dashboard...
+            </p>
+            <div className="flex items-center justify-center space-x-2 text-primary-600">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-sm">Taking you to dashboard...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 fade-in">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Link href="/" className="text-3xl font-bold text-primary-600">
@@ -217,6 +248,8 @@ export default function SignupPage() {
             </button>
           </form>
 
+          {/* Feature Flag: Social Login - set to true to enable */}
+          {false && (
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -245,6 +278,7 @@ export default function SignupPage() {
               </button>
             </div>
           </div>
+          )}
         </div>
 
         <p className="text-center text-gray-600">

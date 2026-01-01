@@ -142,7 +142,7 @@ export default function DashboardPage() {
             <div className="ml-4">
               <p className="text-sm text-gray-500">Shortlisted</p>
               <p className="text-2xl font-bold text-gray-900">
-                {stats?.byStatus.shortlisted || 0}
+                {stats?.shortlisted || 0}
               </p>
             </div>
           </div>
@@ -156,7 +156,7 @@ export default function DashboardPage() {
             <div className="ml-4">
               <p className="text-sm text-gray-500">Interviews</p>
               <p className="text-2xl font-bold text-gray-900">
-                {stats?.byStatus.interview || 0}
+                {stats?.interviews || 0}
               </p>
             </div>
           </div>

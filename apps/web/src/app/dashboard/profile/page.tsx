@@ -156,7 +156,7 @@ export default function ProfilePage() {
         <div className="p-6">
           {/* Basic Info Tab */}
           {activeTab === 'basic' && (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 fade-in-up">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="fullName" className="label">
@@ -245,7 +245,7 @@ export default function ProfilePage() {
 
           {/* Education Tab */}
           {activeTab === 'education' && (
-            <div className="space-y-4">
+            <div className="space-y-4 fade-in-up">
               <div className="flex justify-between items-center">
                 <h3 className="font-medium text-gray-900">Education History</h3>
                 <button
@@ -289,7 +289,7 @@ export default function ProfilePage() {
 
           {/* Experience Tab */}
           {activeTab === 'experience' && (
-            <div className="space-y-4">
+            <div className="space-y-4 fade-in-up">
               <div className="flex justify-between items-center">
                 <h3 className="font-medium text-gray-900">Work Experience</h3>
                 <button
@@ -336,7 +336,7 @@ export default function ProfilePage() {
 
           {/* Skills Tab */}
           {activeTab === 'skills' && (
-            <div className="space-y-4">
+            <div className="space-y-4 fade-in-up">
               <div className="flex justify-between items-center">
                 <h3 className="font-medium text-gray-900">Skills</h3>
                 <button
@@ -404,9 +404,8 @@ export default function ProfilePage() {
         <SkillModal
           onClose={() => setShowSkillModal(false)}
           onAdd={(skills) => {
-            updateProfile({
-              skills: [...(profile?.skills || []), ...skills],
-            });
+            // skills is the full updated skills array from the API response
+            updateProfile({ skills });
           }}
         />
       )}
@@ -592,7 +591,8 @@ function SkillModal({
     setSaving(true);
     try {
       const response = await candidateApi.addSkills(skills);
-      onAdd(response.data.data);
+      // response.data.data is the full profile, extract skills array
+      onAdd(response.data.data.skills || []);
       toast.success('Skills added');
       onClose();
     } catch (error) {
