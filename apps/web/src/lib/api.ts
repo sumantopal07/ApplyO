@@ -1,7 +1,11 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { useAuthStore } from '@/store/auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+// Use CloudFront URL for production, env var for development
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+    ? 'https://d2z6dl8z16a4dw.cloudfront.net' 
+    : 'http://localhost:8080');
 
 export const api: AxiosInstance = axios.create({
   baseURL: `${API_BASE_URL}/api/v1`,
