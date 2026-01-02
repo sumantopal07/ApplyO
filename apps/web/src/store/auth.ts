@@ -55,12 +55,6 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'applyo-auth',
-      partialize: (state) => ({
-        user: state.user,
-        accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
-        isAuthenticated: state.isAuthenticated,
-      }),
     }
   )
 );
