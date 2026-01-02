@@ -48,7 +48,7 @@ function CompanyLoginContent() {
       );
       
       // Wait for store to persist before navigating
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       toast.success('Welcome back!');
       router.push(redirect);
