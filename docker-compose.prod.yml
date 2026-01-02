@@ -53,6 +53,7 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - MONGODB_URI=${MONGODB_URI}
       - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://web-beige-nine-57.vercel.app}
     restart: unless-stopped
     networks:
       - applyo-network
@@ -65,6 +66,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://web-beige-nine-57.vercel.app}
     restart: unless-stopped
     networks:
       - applyo-network
@@ -77,6 +79,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://web-beige-nine-57.vercel.app}
     restart: unless-stopped
     networks:
       - applyo-network
@@ -89,6 +92,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://web-beige-nine-57.vercel.app}
     restart: unless-stopped
     networks:
       - applyo-network
@@ -101,6 +105,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://web-beige-nine-57.vercel.app}
     restart: unless-stopped
     networks:
       - applyo-network
