@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useProfileStore } from '@/store/profile';
+import { useAuthStore } from '@/store/auth';
 import { applicationsApi } from '@/lib/api';
 import {
   User,
@@ -39,11 +40,18 @@ interface Application {
 
 export default function DashboardPage() {
   const { profile, isLoading: profileLoading } = useProfileStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [stats, setStats] = useState<ApplicationStats | null>(null);
   const [recentApplications, setRecentApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Wait for auth to be ready before fetching data
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const [statsRes, applicationsRes] = await Promise.all([
@@ -60,7 +68,7 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
 
   const profileCompletion = profile ? calculateProfileCompletion(profile) : 0;
   const missingSections = profile ? getMissingProfileSections(profile) : [];

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { companyApi } from '@/lib/api';
+import { useAuthStore } from '@/store/auth';
 import toast from 'react-hot-toast';
 import {
   Key,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 export default function CompanyDashboardPage() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [stats, setStats] = useState({
     totalCandidates: 0,
     activeJobs: 0,
@@ -26,8 +28,14 @@ export default function CompanyDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Wait for auth to be ready before fetching data
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+    
     fetchDashboardData();
-  }, []);
+  }, [isAuthenticated]);
 
   const fetchDashboardData = async () => {
     try {

@@ -39,6 +39,10 @@ export default function LoginPage() {
       const { accessToken, refreshToken, user } = response.data.data;
       
       setAuth(user, accessToken, refreshToken);
+      
+      // Wait for store to persist before navigating
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       toast.success('Welcome back!');
       router.push('/dashboard');
     } catch (error: any) {

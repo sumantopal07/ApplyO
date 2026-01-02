@@ -47,6 +47,9 @@ function CompanyLoginContent() {
         refreshToken
       );
       
+      // Wait for store to persist before navigating
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       toast.success('Welcome back!');
       router.push(redirect);
     } catch (error: any) {
