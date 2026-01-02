@@ -2,13 +2,25 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 import { useAuthStore } from '@/store/auth';
 
 // Use CloudFront URL for production, env var for development
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
-  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
-    ? 'https://d2z6dl8z16a4dw.cloudfront.net' 
-    : 'http://localhost:8080');
+const getApiBaseUrl = () => {
+  // Check env var first
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // For client-side, check hostname
+  if (typeof window !== 'undefined') {
+    return window.location.hostname === 'localhost' 
+      ? 'http://localhost:8080' 
+      : 'https://d2z6dl8z16a4dw.cloudfront.net';
+  }
+  
+  // Default for SSR in production
+  return 'https://d2z6dl8z16a4dw.cloudfront.net';
+};
 
 export const api: AxiosInstance = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: `${getApiBaseUrl()}/api/v1`,
   headers: {
     'Content-Type': 'application/json',
   },
