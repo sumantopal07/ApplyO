@@ -60,10 +60,15 @@ api.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           return api(originalRequest);
         } catch (refreshError) {
-          useAuthStore.getState().logout();
-          window.location.href = '/auth/login';
+          // Only logout if refresh token is actually invalid, not on first 401
+          console.error('Token refresh failed:', refreshError);
+          // Don't auto-logout - let user see the error
           return Promise.reject(refreshError);
         }
+      } else {
+        // No refresh token, redirect to login
+        useAuthStore.getState().logout();
+        window.location.href = '/auth/login';
       }
     }
     
